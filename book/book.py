@@ -5,6 +5,7 @@ from tools import stream, get_book, myAPI, cal
 from datetime import datetime as dt
 from time import sleep
 from pandas import to_datetime
+import argparse
 
 import oandapyV20.endpoints.orders as orders_endpoint
 import oandapyV20.endpoints.trades as trades
@@ -23,28 +24,29 @@ def main():
     parser.add_argument('-startingHour')
     parser.add_argument('-endingHour')
     parser.add_argument('-aid')
+    parser.add_argument('-tradeUnits')
     args = parser.parse_args()
 
+    # python book.py -instrument=EUR_USD -bucketWidth=1 -minDifference=0.1 -minMovement=0.0003 -slPips=0.001 -tpPips=0.0015 -waitingPeriods=5 -openPeriods=20 -startingHour=8 -endingHour=16 -tradeUnits=100 -aid=101-004-8182547-010
 
-    instrument = 'EUR_USD'
-    bucketWidth = 3
-    minDifference = 0.1
-    tradeUnits = 100
-    minMovement = 0.0002
-    slPips = 0.0010
-    tpPips = 0.0020
-    waitingPeriods = 5
-    openPeriods = 10
-    startingHour = 8
-    endingHour = 22
+    instrument = args.instrument
+    tradeUnits = args.tradeUnits
 
-    aid = "101-004-8182547-007"
+    bucketWidth = int(args.bucketWidth)
+    minDifference = float(args.minDifference)
+    minMovement = float(args.minMovement)
+
+    slPips = float(args.slPips)
+    tpPips = float(args.tpPips)
+
+    waitingPeriods = int(args.waitingPeriods)
+    openPeriods = int(args.openPeriods)
+
+    startingHour = int(args.startingHour)
+    endingHour = int(args.endingHour)
+
+    aid = args.aid
     api = myAPI()
-
-    try:
-        del prevMinute
-    except:
-        pass
 
     trade = resetTrade().copy()
     for tick in stream(instrument):
@@ -108,7 +110,7 @@ def main():
                                                 instrument,
                                                 -tradeUnits,
                                                 round(openPrice + slPips, 5),
-                                                round(openPrice - tpips, 5),
+                                                round(openPrice - tpPips, 5),
                                                 openPrice))
 
 
