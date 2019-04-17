@@ -1,6 +1,6 @@
-# Algo trading epic
+# Algo (re)trading epic
 
-In this repository I store all strategies I have made as a backup
+In this repository I have all strategies I want to be public
 
 ## Decision tree
 

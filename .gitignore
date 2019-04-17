@@ -1,2 +1,4 @@
-book
-key
+/book
+/.idea
+/.ipynb_checkpoints
+/__pycache__
