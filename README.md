@@ -61,3 +61,13 @@ the sentiment
 From parameters fitting this strategy seems to be very good
 ###### Next steps
 Create a strategy which will be operating on streaming data
+
+### ML indicator (idea)
+
+###### Descriptions
+The point is to create graphic indicator which shows on chart what should be the next market move.
+This indicator is not meant to trade but just to be a filter (advice) for live trading
+###### Results
+None
+###### Next steps
+Create such a thing and apply it on pure python chart - decide whether it is useful or not.
