@@ -29,11 +29,11 @@ In this repository I have all strategies I want to be public
 The main point there was to train model again every new candle so it will 
 be auto-updated.
 ###### Results 
-The accuracy is not good so right now this project is abandoned
+The accuracy is bad, so right now this project is abandoned
 ###### Next steps
 Find better definition when to close a trade.
 
-### Morning (live)
+### Morning strategy (trading - testing phrase)
 
 ###### Description
 The idea is that every morning smarter part of the market first thanks to
@@ -46,21 +46,9 @@ to place many orders, based also on MA values.
 ###### Results
 Scores in pips are not the best, there is a chance that I just found
 a combination of features which fits a particular date period on specific instrument.
+https://www.myfxbook.com/portfolios/simple-demo/308663
 ###### Next steps
 Monitor three strategies which are live on demo
-
-### Book (private)
-
-###### Description
-Thanks to oanda's data about position and order book I want to try to create kind of
-sentiment score for every 20 minutes on the market. By having such a score I can anticipate,
-whether the market is more bullish or bearish - then, during next few minutes I can wait
-for price to go the opposite direction then sentiment and then open a trade according to
-the sentiment
-###### Results
-From parameters fitting this strategy seems to be very good
-###### Next steps
-Create a strategy which will be operating on streaming data
 
 ### ML indicator (idea)
 
