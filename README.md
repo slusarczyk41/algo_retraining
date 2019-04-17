@@ -48,7 +48,18 @@ Scores in pips are not the best, there is a chance that I just found
 a combination of features which fits a particular date period on specific instrument.
 https://www.myfxbook.com/portfolios/simple-demo/308663
 ###### Next steps
-Monitor three strategies which are live on demo
+Monitor three strategies which are live on demo accounts
+
+### Book strategy (trading - testing phrase)
+
+###### Description
+Every 20 minutes there is a new order/position book data. From this values I can calculate
+some kind of sentiment - whether market is more bullish or bearish. According to this value
+limit trade will be opened, with price a bit moved in the opposite direction of market.
+###### Results
+Notebook testing showed that it could be a really good ide
+###### Next steps
+Deploy three strategies with are live on demo accounts
 
 ### ML indicator (idea)
 
