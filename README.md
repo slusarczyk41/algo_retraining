@@ -2,7 +2,28 @@
 
 In this repository I have all strategies I want to be public
 
-## Decision tree
+### Quickstart
+
+1) Create demo account at oanda website https://www.oanda.com/register/#/sign-up/demo
+2) Handle the registration, and after logging in proceed to "Manage Funds" section
+3) Add a few accounts with deposit (you need to do it manually, by default there is 0 balance)
+4) Proceed to Manage API access and revoke/generate a token
+5) Create in your home directory file .key, and paste the key in it
+6) Congrats, now you can test your settings by 
+
+### File structure
+
+- oanda_old - my first playground with oanda's api
+- tools-py - collection of useful functions for faster development
+- workbook.ipynb - notebook where I test new functions for tools.py
+- /bookData - folder where order/position book data is stored
+- all the rest folders contain some strategy, there should be three 
+ files: notebook with strategy testing, notebook with trading testing
+ and .py file with trading itself
+
+# Algorithms
+
+### Decision tree (halted)
 
 ###### Description
 The main point there was to train model again every new candle so it will 
@@ -12,7 +33,7 @@ The accuracy is not good so right now this project is abandoned
 ###### Next steps
 Find better definition when to close a trade.
 
-## Morning
+### Morning (live)
 
 ###### Description
 The idea is that every morning smarter part of the market first thanks to
@@ -28,7 +49,7 @@ a combination of features which fits a particular date period on specific instru
 ###### Next steps
 Monitor three strategies which are live on demo
 
-## Book
+### Book (private)
 
 ###### Description
 Thanks to oanda's data about position and order book I want to try to create kind of
