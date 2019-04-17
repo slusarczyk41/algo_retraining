@@ -1,6 +1,12 @@
+import sys
+sys.path.append('../')
+
+from tools import myAPI
+
 import pandas as pd
 import datetime as dt
 import argparse
+from time import sleep
 
 from oandapyV20 import API
 from oandapyV20.contrib.factories import InstrumentsCandlesFactory
@@ -11,8 +17,8 @@ import oandapyV20.endpoints.instruments as instruments
 
 
 def main():
-
-    # python3 morning_simple_3.py -instrument=EUR_USD -tradeUnits=100 -averageMultiplayer=1.5 -bottomBarrierPips=0.004 -endingHour=12 -openingInterval=1 -slPips=0.0015 -startingHour=8 -tpMultiplayer=1.4 -moveSlPips=0.0015 -aid=101-004-8182547-007
+    #time.sleep(30)
+    # python3 morning_simple_3.py -instrument=EUR_USD -tradeUnits=100 -averageMultiplayer=1.5 -bottomBarrierPips=0.004 -endingHour=12 -openingInterval=1 -slPips=0.0015 -startingHour=8 -tpMultiplayer=14 -moveSlPips=0.0015
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-averageMultiplayer')
@@ -43,15 +49,20 @@ def main():
     instrument = args.instrument
     granularity_param = 'M5'
 
-    client = API(access_token='f8599fa0624567b98d6293acc87489bb-e288ec05b46b6e3d0bc753e6a2fbab48')
-
+    client = myAPI()
 
     calendar = cal(client, instrument, 604800)
     # EDGE CASE: THERE ARE NO CALENDAR EVENTS, KEY ERROR WITH TIMESTAMP WILL BE RAISEN
-    history = hist(client, instrument, 3, 0, granularity_param)
+
+    while True:
+        history = hist(client, instrument, 2, 0, granularity_param)
+        if history.iloc[-1].time.minute in (0, 20, 40):
+            break
+        sleep(1)
+
     merged = merge(history, calendar)
 
-    # TO BE REMOVED
+    # CHECK THE MINUTE
     r = instruments.InstrumentsCandles(instrument="EUR_USD", params={"count": 1, "granularity": "M1"})
     client.request(r)
     print(r.response['candles'])
@@ -66,27 +77,19 @@ def main():
     print(merged.tail(5))
     print('----')
 
-    candleData = merged[
-        (
-                (merged.index.hour >= 2) &
-                (merged.index.hour < startingHour + openingInterval) &
-                (merged.index.minute.isin([20, 40]))
-        ) |
-        (
-                (merged.index.hour == startingHour + openingInterval) &
-                (merged.index.minute.isin([0]))
-        ) |
-        (
-                (merged.index.hour == endingHour) &
-                (merged.index.minute == 0)
-        )
-        ]
+    candleData = merged[(merged.index.hour > 6)&(merged.index.hour < 22) &
+                        (merged.index.date == merged.index.date[-1])
+            ]
 
     print('candleData')
     print(candleData)
     print('----')
 
-    if len(candleData[candleData['impact'] != 0]) == 0:
+    checkCalendar = candleData.iloc[-6:]
+
+    if len(checkCalendar[checkCalendar['impact'] != 0]) == 0:
+        candleData = candleData[candleData.index.minute.isin([0, 20, 40])]
+
         currentCandle = candleData.iloc[-1]
         print('currentCandle')
         print(currentCandle)
@@ -95,19 +98,33 @@ def main():
         # FIRST OPEN
         if (currentCandle.name.hour == startingHour and
                 currentCandle.name.minute == 20):
-            print('first trade')
-            openTrade(client, aid, instrument, tradeUnits, bottomBarrierPips, 0.0100)
+
+            basePrice = candleData[
+                    (candleData.index.hour == startingHour) &
+                    (candleData.index.minute == 0)
+            ].iloc[0].open
+            print('first trade, base price open is')
+            print(basePrice)
+            print('the current candle open price is')
+            print(currentCandle.open)
+
+            currentPrice = currentCandle.open
+            if currentPrice < basePrice:
+                response = openTrade(client, aid, instrument, tradeUnits, currentPrice-bottomBarrierPips, currentPrice+0.0100)
+                print(response)
 
         # OPEN OTHERS
-        if ((currentCandle.name.hour == startingHour) and
+        elif ((currentCandle.name.hour == startingHour) and
             (currentCandle.name.minute == 40)) or \
                 ((currentCandle.name.hour > startingHour) and
                  (currentCandle.name.hour < startingHour + openingInterval)):
             print('next trades')
 
-            if currentCandle['ma5'] > currentCandle['ma10']:
+            if currentCandle['ma5'] < currentCandle['ma10']:
 
                 tradesList = get_trades(client, aid)
+                print('trades list')
+                print(tradesList)
                 if len(tradesList) != 0:
                     firstTimestamp = '2050-10-28T14:28:05.231759081Z'
                     pricesContainer = []
@@ -117,14 +134,31 @@ def main():
                             firstTimestamp = trade['openTime']
                             firstSL = trade['stopLossOnFill']['price']
                             basePrice = trade['price']
-                        # EDGE CASE: trades before were closed because of bottomBarrier
-                        # (or stoploss in other words), so it will open another trade
-                        if currentCandle['open'] > firstSL:
-                            if currentCandle['open'] < basePrice:
-                                if currentCandle['open'] < min(pricesContainer):
-                                    unitsMultiplayed = len(pricesContainer) * averageMultiplayer
-                                    openTrade(client, aid, instrument, unitsMultiplayed, firstSL, 0.0100)
+                            
+                    # EDGE CASE: trades before were closed because of bottomBarrier
+                    # (or stoploss in other words), so it will open another trade
+                    if currentCandle['open'] > firstSL:
+                        if currentCandle['open'] < basePrice:
+                            if currentCandle['open'] < min(pricesContainer):
+                                unitsMultiplayed = len(pricesContainer) * averageMultiplayer
+                                response = openTrade(client, aid, instrument, unitsMultiplayed, firstSL, currentCandle['open']+0.0100)
+                                print(response)
+                else:
+                    # open trade when there are no open trades
+                    basePrice = candleData[
+                            (candleData.index.hour == startingHour) &
+                            (candleData.index.minute == 0)
+                    ].iloc[0].open
+                    print('There are still no trades open, take a look at base price')
+                    print(basePrice)
+                    print('and at the current open price')
+                    print(currentCandle['open'])
 
+                    if currentCandle['open'] < basePrice:
+                        response = openTrade(client, aid, instrument, tradeUnits, 
+                                    currentCandle['open']-bottomBarrierPips, 
+                                    currentCandle['open']+0.0100)
+                        print(response)
 
         # OPEN THE LAST ONE
         # MOVE SL AT THE END OF OPENING INTERVAL
@@ -146,41 +180,47 @@ def main():
                             firstTimestamp = trade['openTime']
                             firstSL = trade['stopLossOnFill']['price']
                             basePrice = trade['price']
-                        # EDGE CASE: trades before were closed because of bottomBarrier
-                        # (or stoploss in other words), so it will open another trade
-                        if currentCandle['open'] > firstSL:
-                            if currentCandle['open'] < basePrice:
-                                if currentCandle['open'] < min(pricesContainer):
-                                    unitsMultiplayed = len(pricesContainer) * averageMultiplayer
-                                    openTrade(client, aid, instrument, unitsMultiplayed, firstSL, 0.0100)
+                    
+                    # EDGE CASE: trades before were closed because of bottomBarrier
+                    # (or stoploss in other words), so it will open another trade
+                    if currentCandle['open'] > firstSL:
+                        if currentCandle['open'] < basePrice:
+                            if currentCandle['open'] < min(pricesContainer):
+                                unitsMultiplayed = len(pricesContainer) * averageMultiplayer
+                                openTrade(client, aid, instrument, unitsMultiplayed, firstSL, 
+                                            currentCandle['open']+0.0100)
 
             pricesContainer = []
             unitsContainer = []
             for trade in get_trades(client, aid):
                 pricesContainer.append(trade['price'])
                 unitsContainer.append(trade['initialUnits'])
-
+            print(pricesContainer)
             if len(pricesContainer) != 0:
                 weightedPrices = []
+                print('change sl')
                 for i in range(len(pricesContainer)):
                     weightedPrices.append(pricesContainer[i] * unitsContainer[i])
                 averagePrice = weightedPrices / sum(unitsContainer)
                 newSL = averagePrice - slPips
                 newTP = averagePrice + (slPips * tpMultiplier)
-
+                print('new sl')
+                print(newSL)
+                print('new tp')
+                print(newTP)
                 for trade in get_trades(client, aid):
                     change_sl_tp(client, aid, trade['id'], newSL, newTP)
 
             # EDGE CASE: IT CAN TRY TO MOVE SL TOO CLOSE TO TRADES
 
-        # MOVE SL
+        # MOVE SL AT MIDDLE
         elif currentCandle.name.hour == middleHour and \
                 currentCandle.name.minute == 20:
 
             for trade in get_trades(client, aid):
                 change_sl_tp(client, aid, trade['id'],
                              float(trade['stopLossOrder']['price']) + moveSlPips,
-                             trade['stopLossOrder']['price'])
+                             trade['takeProfitOrder']['price'])
 
 
         # CLOSE TRADES (ENDING BARRIER)
