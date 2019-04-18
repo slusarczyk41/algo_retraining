@@ -110,8 +110,9 @@ def main():
 
             currentPrice = currentCandle.open
             if currentPrice < basePrice:
-                response = openTrade(client, aid, instrument, tradeUnits, currentPrice-bottomBarrierPips, currentPrice+0.0100)
-                print(response)
+                if currentCandle['ma5'] < currentCandle['ma10']:
+                    response = openTrade(client, aid, instrument, tradeUnits, currentPrice-bottomBarrierPips, currentPrice+0.0100)
+                    print(response)
 
         # OPEN OTHERS
         elif ((currentCandle.name.hour == startingHour) and
@@ -134,6 +135,12 @@ def main():
                             firstTimestamp = trade['openTime']
                             firstSL = trade['stopLossOnFill']['price']
                             basePrice = trade['price']
+                    print('base price')
+                    print(basePrice)
+                    print('min price')
+                    print(min(pricesContainer))
+                    print('firstSL')
+                    print(firstSL)
                             
                     # EDGE CASE: trades before were closed because of bottomBarrier
                     # (or stoploss in other words), so it will open another trade
@@ -155,10 +162,11 @@ def main():
                     print(currentCandle['open'])
 
                     if currentCandle['open'] < basePrice:
-                        response = openTrade(client, aid, instrument, tradeUnits, 
-                                    currentCandle['open']-bottomBarrierPips, 
-                                    currentCandle['open']+0.0100)
-                        print(response)
+                        if currentCandle['ma5'] < currentCandle['ma10']:
+                            response = openTrade(client, aid, instrument, tradeUnits,
+                                        currentCandle['open']-bottomBarrierPips,
+                                        currentCandle['open']+0.0100)
+                            print(response)
 
         # OPEN THE LAST ONE
         # MOVE SL AT THE END OF OPENING INTERVAL
@@ -166,7 +174,7 @@ def main():
               currentCandle.name.minute == 0):
             print('last trade')
 
-            if currentCandle['ma5'] > currentCandle['ma10']:
+            if currentCandle['ma5'] < currentCandle['ma10']:
 
                 tradesList = get_trades(client, aid)
                 if len(tradesList) != 0:
@@ -193,17 +201,19 @@ def main():
             pricesContainer = []
             unitsContainer = []
             for trade in get_trades(client, aid):
-                pricesContainer.append(trade['price'])
-                unitsContainer.append(trade['initialUnits'])
+                pricesContainer.append(float(trade['price']))
+                unitsContainer.append(int(trade['initialUnits']))
+
+            print('lets change the sl')
             print(pricesContainer)
             if len(pricesContainer) != 0:
                 weightedPrices = []
                 print('change sl')
                 for i in range(len(pricesContainer)):
                     weightedPrices.append(pricesContainer[i] * unitsContainer[i])
-                averagePrice = weightedPrices / sum(unitsContainer)
-                newSL = averagePrice - slPips
-                newTP = averagePrice + (slPips * tpMultiplier)
+                averagePrice = round(weightedPrices / sum(unitsContainer), 5)
+                newSL = round(averagePrice - slPips, 5)
+                newTP = round(averagePrice + (slPips * tpMultiplier), 5)
                 print('new sl')
                 print(newSL)
                 print('new tp')
@@ -216,11 +226,12 @@ def main():
         # MOVE SL AT MIDDLE
         elif currentCandle.name.hour == middleHour and \
                 currentCandle.name.minute == 20:
+            print('move sl at the middle of trade')
 
             for trade in get_trades(client, aid):
                 change_sl_tp(client, aid, trade['id'],
-                             float(trade['stopLossOrder']['price']) + moveSlPips,
-                             trade['takeProfitOrder']['price'])
+                             round(float(trade['stopLossOrder']['price']) + moveSlPips, 5),
+                             round(trade['takeProfitOrder']['price'], 5))
 
 
         # CLOSE TRADES (ENDING BARRIER)
@@ -231,7 +242,7 @@ def main():
                 r = tradesEndpoint.TradeClose(accountID=aid,
                                               data={"units": trade['initialUnits']},
                                               tradeID=trade['id'])
-                client.request(r)
+                print(client.request(r))
 
         else:
             print('no action')
