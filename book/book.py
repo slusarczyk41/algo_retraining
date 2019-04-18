@@ -27,7 +27,7 @@ def main():
     # python book.py -instrument=EUR_USD -bucketWidth=1 -minDifference=0.1 -minMovement=0.0003 -slPips=0.001 -tpPips=0.0015 -waitingPeriods=5 -openPeriods=20 -startingHour=8 -endingHour=16 -tradeUnits=100 -aid=101-004-8182547-010
 
     instrument = args.instrument
-    tradeUnits = args.tradeUnits
+    tradeUnits = int(args.tradeUnits)
 
     bucketWidth = int(args.bucketWidth)
     minDifference = float(args.minDifference)
@@ -102,7 +102,7 @@ def main():
 
                             else:
                                 print('opentrade')
-                                openPrice = float(currentAskPrice) + minMovement
+                                openPrice = round(float(currentAskPrice) + minMovement, 5)
                                 print(openTrade(api, aid,
                                                 instrument,
                                                 -tradeUnits,
@@ -139,23 +139,23 @@ def main():
                     print('----- open ------')
                     print(trade)
                     if trade['openPeriods'] == 0:
-                        for openTrade in get_trades(api, aid):
+                        for openedTrade in get_trades(api, aid):
                             r = trades.TradeClose(accountID=aid,
-                                                  tradeID=openTrade['id'],
-                                                  data={"units": openTrade['initialUnits']})
+                                                  tradeID=openedTrade['id'],
+                                                  data={"units": openedTrade['initialUnits']})
                             print(api.request(r))
                     else:
                         trade['openPeriods'] -= 1
                         trades = get_trades(api, aid)
                         print(trades)
-                        for trade in trades:
-                            if int(trade['initialUnits']) > 0:
-                                print(change_sl_tp(aid, aid, trade['id'],
-                                                   float(trade['stopLossOnFill']['price']) + 0.0001
+                        for openedTrade in trades:
+                            if int(openedTrade['initialUnits']) > 0:
+                                print(change_sl_tp(aid, aid, openedTrade['id'],
+                                                   float(openedTrade['stopLossOnFill']['price']) + 0.0001
                                                    ))
                             else:
-                                print(change_sl_tp(aid, aid, trade['id'],
-                                                   float(trade['stopLossOnFill']['price']) - 0.0001
+                                print(change_sl_tp(aid, aid, openedTrade['id'],
+                                                   float(openedTrade['stopLossOnFill']['price']) - 0.0001
                                                    ))
 
 
