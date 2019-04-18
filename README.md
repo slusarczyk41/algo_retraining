@@ -1,3 +1,5 @@
+https://stackoverflow.com/questions/714063/importing-modules-from-parent-folder/50194143#50194143
+
 # Algo (re)trading epic
 
 In this repository I have all strategies I want to be public
