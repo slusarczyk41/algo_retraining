@@ -78,7 +78,11 @@ def save_data(df_list, date, typ, instrument):
             'level_5_down_l',
             'level_5_down_s',
         ])
-    df.to_csv(instrument+'/'+typ+'/'+date+'.csv')
+    if not os.path.exists(instrument):
+        os.mkdir(instrument)
+    if not os.path.exists(instrument+'/'+typ.replace('Book', 's')):
+        os.mkdir(instrument+'/'+typ.replace('Book', 's'))
+    df.to_csv(instrument+'/'+typ.replace('Book', 's')+'/'+date+'.csv')
 
 
 def dataGenerator(typ, start, end, key, instrument):
