@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../')
-
 from tools import stream, get_book, myAPI, cal
 from datetime import datetime as dt
 from time import sleep
