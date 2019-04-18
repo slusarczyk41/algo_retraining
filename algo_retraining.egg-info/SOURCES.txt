@@ -1,6 +1,0 @@
-algo_retraining.egg-info/PKG-INFO
-algo_retraining.egg-info/SOURCES.txt
-algo_retraining.egg-info/dependency_links.txt
-algo_retraining.egg-info/top_level.txt
-book/__init__.py
-book/book.py
