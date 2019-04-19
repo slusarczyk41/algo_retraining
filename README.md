@@ -1,4 +1,3 @@
-https://stackoverflow.com/questions/714063/importing-modules-from-parent-folder/50194143#50194143
 
 # Algo (re)trading epic
 
@@ -6,12 +5,21 @@ In this repository I have all strategies I want to be public
 
 ### Quickstart
 
+##### Oanda
 1) Create demo account at oanda website https://www.oanda.com/register/#/sign-up/demo
 2) Handle the registration, and after logging in proceed to "Manage Funds" section
 3) Add a few accounts with deposit (you need to do it manually, by default there is 0 balance)
 4) Proceed to Manage API access and revoke/generate a token
-5) Create in your home directory file .key, and paste the key in it
-6) Congrats, now you can test your settings by 
+
+##### Repo
+1) Clone the repository
+2) Being above repository directory execute python(3) -m venv venv_algo
+3) Activate virtualenv by . /venv_algo/bin/activate (linux) or ./venv_algo/Scripts/activate (win)
+4) Add the repo to installed packages by pip install -e .
+5) Cd to the repository folder
+6) Install requirements by python(3) -m pip install -r requirements.txt
+7) Create in your home directory file .key, and paste the key generated on oanda website in it
+
 
 ### File structure
 

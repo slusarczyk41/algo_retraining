@@ -34,15 +34,22 @@ def main():
 
             currTimestamp = pd.to_datetime(response[typ]['time'])
             if currMonth != currTimestamp.month:
-                savingName = str(currTimestamp.year) + '-' + str(currTimestamp.month)
+                if len(str(currMonth)) == 1:
+                    savingName = str(currTimestamp.year) + '-0' + str(currMonth)
+                else:
+                    savingName = str(currTimestamp.year) + '-' + str(currMonth)
                 print('saving data for: ' + savingName)
                 save_data(df_list, savingName, typ, instrument)
                 df_list = []
+                currMonth = currTimestamp.month
 
         else:
             if 'is not yet available. The most recent snapshot was' in response['errorMessage']:
                 print('This month has not all data')
-                savingName = str(currTimestamp.year) + '-' + str(currTimestamp.month)
+                if len(str(currMonth)) == 1:
+                    savingName = str(currTimestamp.year) + '-0' + str(currMonth)
+                else:
+                    savingName = str(currTimestamp.year) + '-' + str(currMonth)
                 print('saving data for: ' + savingName)
                 save_data(df_list, savingName, typ, instrument)
                 break
