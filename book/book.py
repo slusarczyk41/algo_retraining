@@ -59,9 +59,8 @@ def main():
 
             currentMinute = int(tick['time'][14:16])
             if tick['type'] == 'PRICE':
-                currentAskPrice = tick['closeoutAsk']
-                currentBidPrice = tick['closeoutBid']
-
+                currentPrice = round((float(tick['closeoutAsk']) + float(tick['closeoutBid']))/2, 5)
+            
             if currentMinute != prevMinute:
                 if trade['status'] == 'idle':
                     print('------- idle -------')
@@ -92,7 +91,7 @@ def main():
 
                             if decision == 'buy':
                                 print('opentrade')
-                                openPrice = round(float(currentBidPrice) - minMovement, 5)
+                                openPrice = round(float(currentPrice) - minMovement, 5)
                                 print(openTrade(api, aid,
                                                 instrument,
                                                 tradeUnits,
@@ -102,7 +101,7 @@ def main():
 
                             else:
                                 print('opentrade')
-                                openPrice = round(float(currentAskPrice) + minMovement, 5)
+                                openPrice = round(float(currentPrice) + minMovement, 5)
                                 print(openTrade(api, aid,
                                                 instrument,
                                                 -tradeUnits,
@@ -113,8 +112,7 @@ def main():
 
                 elif trade['status'] == 'waiting':
                     print('------- waiting -------')
-                    print('currentPrice: ' + str(currentAskPrice))
-                    print('currentPrice: ' + str(currentBidPrice))
+                    print('currentPrice: ' + str(currentPrice))
                     print('and the trade: ')
                     print(trade)
 
