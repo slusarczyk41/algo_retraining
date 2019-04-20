@@ -1,9 +1,9 @@
 
-# Algo (re)trading epic
+# Algorithm trading
 
-In this repository I have all strategies I want to be public
+In this repository I store all strategies I want to be public
 
-### Quickstart
+## Quickstart
 
 ##### Oanda
 1) Create demo account at oanda website https://www.oanda.com/register/#/sign-up/demo
@@ -18,7 +18,13 @@ In this repository I have all strategies I want to be public
 4) Add the repo to installed packages by pip install -e .
 5) Cd to the repository folder
 6) Install requirements by python(3) -m pip install -r requirements.txt
-7) Create in your home directory file .key, and paste the key generated on oanda website in it
+7) Create in your home directory file .key, 
+paste the api key generated on oanda website in the first line and
+any account number in second line
+
+##### Order/Position book data scrapping
+1) cd to /bookData
+2) execute python(3) get_book.py -instrument=XXX_XXX -type=xxxxxxBook -start_date=YYYY-MM -end_date=YYYY-MM
 
 
 ### File structure
@@ -31,17 +37,8 @@ In this repository I have all strategies I want to be public
  files: notebook with strategy testing, notebook with trading testing
  and .py file with trading itself
 
-# Algorithms
+## Existing algorithms
 
-### Decision tree (halted)
-
-###### Description
-The main point there was to train model again every new candle so it will 
-be auto-updated.
-###### Results 
-The accuracy is bad, so right now this project is abandoned
-###### Next steps
-Find better definition when to close a trade.
 
 ### Morning strategy (trading - testing phrase)
 
@@ -71,7 +68,20 @@ Notebook testing showed that it could be a really good ide
 ###### Next steps
 Deploy three strategies with are live on demo accounts
 
-### ML indicator (idea)
+
+### Decision tree (halted)
+
+###### Description
+The main point there was to train model again every new day or candle
+so it will be auto-updated.
+###### Results 
+The accuracy is bad, so right now this project is abandoned
+###### Next steps
+None
+
+## Ideas
+
+### ML indicator
 
 ###### Descriptions
 The point is to create graphic indicator which shows on chart what should be the next market move.
@@ -80,3 +90,16 @@ This indicator is not meant to trade but just to be a filter (advice) for live t
 None
 ###### Next steps
 Create such a thing and apply it on pure python chart - decide whether it is useful or not.
+
+
+### Fibonacci strategy
+
+###### Descriptioon
+Logic behind that is quite simple, use popular fibonacci extension levels to
+open trades. The problem is how to define it and find proper max/min values for
+a trend in the code
+###### Results
+None
+###### Next steps
+Try with approach that the time frame for max/min values looking is the same
+as size of meta trader 4 window on different intervals.

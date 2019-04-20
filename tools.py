@@ -15,7 +15,7 @@ def myAPI():
 
 def stream(instrument):
     api = myAPI()
-    aid = "101-004-8182547-007"
+    aid = open(os.path.expanduser('~/.key'), 'r').read().splitlines()[1]
     r = pricing.PricingStream(accountID=aid, params={'instruments': instrument})
     return api.request(r)
 
