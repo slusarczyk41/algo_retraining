@@ -3,7 +3,7 @@
 
 In this repository I store all strategies I want to be public
 
-## Quickstart
+### Quickstart
 
 ##### Oanda
 1) Create demo account at oanda website https://www.oanda.com/register/#/sign-up/demo
