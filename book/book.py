@@ -231,8 +231,8 @@ def validateOpen(orders, positions, minDifference):
     longs = 0
     shorts = 0
     for key in positions.keys():
-        longs += float(orders[key]['longs'])
-        shorts += float(orders[key]['shorts'])
+        longs += float(positions[key]['longs'])
+        shorts += float(positions[key]['shorts'])
     positionsSentiment = longs / shorts
 
     if ordersSentiment > (1 + minDifference) and positionsSentiment > (1 + minDifference):

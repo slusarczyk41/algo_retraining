@@ -108,7 +108,7 @@ def main():
             currentPrice = currentCandle.open
             if currentPrice < basePrice:
                 if currentCandle['ma5'] < currentCandle['ma10']:
-                    response = openTrade(client, aid, instrument, tradeUnits, currentPrice-bottomBarrierPips, currentPrice+0.0100)
+                    response = openTrade(client, aid, instrument, tradeUnits, float(currentPrice)-bottomBarrierPips, currentPrice+0.0100)
                     print(response)
 
         # OPEN OTHERS
