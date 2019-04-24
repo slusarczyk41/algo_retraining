@@ -208,7 +208,7 @@ def main():
                 print('change sl')
                 for i in range(len(pricesContainer)):
                     weightedPrices.append(pricesContainer[i] * unitsContainer[i])
-                averagePrice = round(weightedPrices / sum(unitsContainer), 5)
+                averagePrice = round(sum(weightedPrices) / sum(unitsContainer), 5)
                 newSL = round(averagePrice - slPips, 5)
                 newTP = round(averagePrice + (slPips * tpMultiplier), 5)
                 print('new sl')
@@ -228,7 +228,7 @@ def main():
             for trade in get_trades(client, aid):
                 change_sl_tp(client, aid, trade['id'],
                              round(float(trade['stopLossOrder']['price']) + moveSlPips, 5),
-                             round(trade['takeProfitOrder']['price'], 5))
+                             trade['takeProfitOrder']['price'])
 
 
         # CLOSE TRADES (ENDING BARRIER)
