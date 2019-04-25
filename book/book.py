@@ -149,11 +149,11 @@ def main():
                         for openedTrade in trades:
                             if int(openedTrade['initialUnits']) > 0:
                                 print(change_sl_tp(aid, aid, openedTrade['id'],
-                                                   float(openedTrade['stopLossOnFill']['price']) + 0.0001
+                                                   float(openedTrade['stopLossOrder']['price']) + 0.0001
                                                    ))
                             else:
                                 print(change_sl_tp(aid, aid, openedTrade['id'],
-                                                   float(openedTrade['stopLossOnFill']['price']) - 0.0001
+                                                   float(openedTrade['stopLossOrder']['price']) - 0.0001
                                                    ))
 
 
@@ -164,6 +164,8 @@ def main():
                     print(get_orders(api, aid))
 
             prevMinute = currentMinute
+        elif int(tick['time'][11:13]) == endingHour:
+            break
 
 
 def resetTrade():
