@@ -130,7 +130,7 @@ def main():
                         pricesContainer.append(trade['price'])
                         if trade['openTime'] < firstTimestamp:
                             firstTimestamp = trade['openTime']
-                            firstSL = trade['stopLossOnFill']['price']
+                            firstSL = trade['stopLossOrder']['price']
                             basePrice = trade['price']
                     print('base price')
                     print(basePrice)
@@ -141,7 +141,7 @@ def main():
                             
                     # EDGE CASE: trades before were closed because of bottomBarrier
                     # (or stoploss in other words), so it will open another trade
-                    if currentCandle['open'] > firstSL:
+                    if currentCandle['open'] > float(firstSL):
                         if currentCandle['open'] < basePrice:
                             if currentCandle['open'] < min(pricesContainer):
                                 unitsMultiplayed = len(pricesContainer) * averageMultiplayer
@@ -161,8 +161,8 @@ def main():
                     if currentCandle['open'] < basePrice:
                         if currentCandle['ma5'] < currentCandle['ma10']:
                             response = openTrade(client, aid, instrument, tradeUnits,
-                                        currentCandle['open']-bottomBarrierPips,
-                                        currentCandle['open']+0.0100)
+                                        round(currentCandle['open']-bottomBarrierPips, 5),
+                                        round(currentCandle['open']+0.0100, 5))
                             print(response)
 
         # OPEN THE LAST ONE
@@ -175,20 +175,23 @@ def main():
 
                 tradesList = get_trades(client, aid)
                 if len(tradesList) != 0:
-                    firstTimestamp = '2050-10-28T14:28:05.231759081Z'
                     pricesContainer = []
                     unitsContainer = []
+                    firstTimestamp = None
                     for trade in tradesList:
+                        timestamp = trade["openTime"]
+                        firstSL = trade['stopLossOrder']['price']
+                        basePrice = trade['price']
                         pricesContainer.append(trade['price'])
                         unitsContainer.append(trade['initialUnits'])
-                        if trade['openTime'] < firstTimestamp:
+                        if trade['openTime'] < timestamp:
                             firstTimestamp = trade['openTime']
-                            firstSL = trade['stopLossOnFill']['price']
+                            firstSL = trade['stopLossOrder']['price']
                             basePrice = trade['price']
                     
                     # EDGE CASE: trades before were closed because of bottomBarrier
                     # (or stoploss in other words), so it will open another trade
-                    if currentCandle['open'] > firstSL:
+                    if currentCandle['open'] > float(firstSL):
                         if currentCandle['open'] < basePrice:
                             if currentCandle['open'] < min(pricesContainer):
                                 unitsMultiplayed = len(pricesContainer) * averageMultiplayer

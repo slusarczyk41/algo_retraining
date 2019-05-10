@@ -60,7 +60,7 @@ def main():
             currentMinute = int(tick['time'][14:16])
             if tick['type'] == 'PRICE':
                 currentPrice = round((float(tick['closeoutAsk']) + float(tick['closeoutBid']))/2, 5)
-            
+                
             if currentMinute != prevMinute:
                 if trade['status'] == 'idle':
                     print('------- idle -------')
@@ -76,7 +76,7 @@ def main():
                         positions = get_book(instrument, 'positions', bucketWidth)[1]
                         decision = validateOpen(orders, positions, minDifference)
                         print('decision: ' + str(decision))
-                        if decision:
+                        if decision and currentPrice:
                             trade['status'] = 'waiting'
                             trade['waitingPeriods'] = waitingPeriods
 
@@ -148,11 +148,11 @@ def main():
                         print(trades)
                         for openedTrade in trades:
                             if int(openedTrade['initialUnits']) > 0:
-                                print(change_sl_tp(aid, aid, openedTrade['id'],
+                                print(change_sl_tp(api, aid, openedTrade['id'],
                                                    float(openedTrade['stopLossOrder']['price']) + 0.0001
                                                    ))
                             else:
-                                print(change_sl_tp(aid, aid, openedTrade['id'],
+                                print(change_sl_tp(api, aid, openedTrade['id'],
                                                    float(openedTrade['stopLossOrder']['price']) - 0.0001
                                                    ))
 
