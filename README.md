@@ -14,9 +14,9 @@ In this repository I store all strategies I want to be public
 ##### Repo
 1) Clone the repository
 2) Being above repository directory execute python(3) -m venv venv_algo
-3) Activate virtualenv by . /venv_algo/bin/activate (linux) or ./venv_algo/Scripts/activate (win)
-4) Add the repo to installed packages by pip install -e .
-5) Cd to the repository folder
+3) Activate virtualenv by . venv_algo/bin/activate (linux) or ./venv_algo/Scripts/activate (win)
+4) CD to repo folder
+5) Add the repo to installed packages by pip install -e .
 6) Install requirements by python(3) -m pip install -r requirements.txt
 7) Create in your home directory file .key, 
 paste the api key generated on oanda website in the first line and
