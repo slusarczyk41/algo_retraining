@@ -108,7 +108,12 @@ def main():
             currentPrice = currentCandle.open
             if currentPrice < basePrice:
                 if currentCandle['ma5'] < currentCandle['ma10']:
-                    response = openTrade(client, aid, instrument, tradeUnits, float(currentPrice)-bottomBarrierPips, currentPrice+0.0100)
+                    response = openTrade(client, 
+                                        aid, 
+                                        instrument, 
+                                        tradeUnits, 
+                                        round(float(currentPrice)-bottomBarrierPips, 5), 
+                                        round(currentPrice+0.0100, 5))
                     print(response)
 
         # OPEN OTHERS
@@ -142,9 +147,9 @@ def main():
                     # EDGE CASE: trades before were closed because of bottomBarrier
                     # (or stoploss in other words), so it will open another trade
                     if currentCandle['open'] > float(firstSL):
-                        if currentCandle['open'] < basePrice:
-                            if currentCandle['open'] < min(pricesContainer):
-                                unitsMultiplayed = len(pricesContainer) * averageMultiplayer
+                        if currentCandle['open'] < float(basePrice):
+                            if currentCandle['open'] < float(min(pricesContainer)):
+                                unitsMultiplayed = int(len(pricesContainer) * averageMultiplayer * tradeUnits)
                                 response = openTrade(client, aid, instrument, unitsMultiplayed, firstSL, currentCandle['open']+0.0100)
                                 print(response)
                 else:
@@ -192,7 +197,7 @@ def main():
                     # EDGE CASE: trades before were closed because of bottomBarrier
                     # (or stoploss in other words), so it will open another trade
                     if currentCandle['open'] > float(firstSL):
-                        if currentCandle['open'] < basePrice:
+                        if currentCandle['open'] < float(basePrice):
                             if currentCandle['open'] < min(pricesContainer):
                                 unitsMultiplayed = len(pricesContainer) * averageMultiplayer
                                 openTrade(client, aid, instrument, unitsMultiplayed, firstSL, 

@@ -136,24 +136,26 @@ def main():
                 elif trade['status'] == 'open':
                     print('----- open ------')
                     print(trade)
+                    print('----- oanda -----')
+                    trades = get_trades(api, aid)
+                    print(trades)
                     if trade['openPeriods'] == 0:
-                        for openedTrade in get_trades(api, aid):
+                        for openedTrade in trades:
                             r = trades.TradeClose(accountID=aid,
                                                   tradeID=openedTrade['id'],
                                                   data={"units": openedTrade['initialUnits']})
                             print(api.request(r))
                     else:
                         trade['openPeriods'] -= 1
-                        trades = get_trades(api, aid)
-                        print(trades)
+                        #print(trades)
                         for openedTrade in trades:
                             if int(openedTrade['initialUnits']) > 0:
                                 print(change_sl_tp(api, aid, openedTrade['id'],
-                                                   float(openedTrade['stopLossOrder']['price']) + 0.0001
+                                                   round(float(openedTrade['stopLossOrder']['price']) + 0.0001, 5)
                                                    ))
                             else:
                                 print(change_sl_tp(api, aid, openedTrade['id'],
-                                                   float(openedTrade['stopLossOrder']['price']) - 0.0001
+                                                   round(float(openedTrade['stopLossOrder']['price']) - 0.0001, 5)
                                                    ))
 
 
